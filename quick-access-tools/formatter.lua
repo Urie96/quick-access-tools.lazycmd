@@ -71,33 +71,13 @@ local tools = {
     key = 'url_encode',
     display = 'URL Encode',
     description = 'URL encode string',
-    converter = function(input, cb)
-      check_has 'python3'
-      local script = "import sys; from urllib.parse import quote; print(quote(sys.stdin.read(), safe=''))"
-      lc.system({ 'python3', '-c', script }, { stdin = input }, function(out)
-        if out.code == 0 then
-          cb(out.stdout)
-        else
-          show_error(out.stderr)
-        end
-      end)
-    end,
+    converter = function(input, cb) cb(lc.url.encode(input)) end,
   },
   {
     key = 'url_decode',
     display = 'URL Decode',
     description = 'URL decode string',
-    converter = function(input, cb)
-      check_has 'python3'
-      local script = 'import sys; from urllib.parse import unquote; print(unquote(sys.stdin.read()))'
-      lc.system({ 'python3', '-c', script }, { stdin = input }, function(out)
-        if out.code == 0 then
-          cb(out.stdout)
-        else
-          show_error(out.stderr)
-        end
-      end)
-    end,
+    converter = function(input, cb) cb(lc.url.decode(input)) end,
   },
   {
     key = 'json_to_nix',
