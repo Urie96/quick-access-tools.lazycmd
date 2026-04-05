@@ -6,7 +6,7 @@ local function check_has(cmd)
 end
 
 -- Show error in preview
-local function show_error(err) lc.api.page_set_preview(('Error: ' .. tostring(err)):fg 'red') end
+local function show_error(err) lc.api.set_preview(nil, ('Error: ' .. tostring(err)):fg 'red') end
 
 local tools = {
   {
@@ -124,9 +124,9 @@ local tools = {
 -- Show result in preview
 local function show_preview(result, opt)
   if opt and opt.language then
-    lc.api.page_set_preview(lc.style.highlight(result, opt.language))
+    lc.api.set_preview(nil, lc.style.highlight(result, opt.language))
   else
-    lc.api.page_set_preview(lc.style.text {
+    lc.api.set_preview(nil, lc.style.text {
       lc.style.line {
         lc.style.span(result),
       },

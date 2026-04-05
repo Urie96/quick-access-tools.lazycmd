@@ -18,7 +18,7 @@ end
 
 -- Show result in preview
 local function show_preview(result)
-  lc.api.page_set_preview(lc.style.text {
+  lc.api.set_preview(nil, lc.style.text {
     lc.style.line {
       lc.style.span(result),
     },
@@ -27,7 +27,7 @@ end
 
 -- Show error in preview
 local function show_error(err)
-  lc.api.page_set_preview(lc.style.text {
+  lc.api.set_preview(nil, lc.style.text {
     lc.style.line {
       lc.style.span('Error: ' .. err),
     },

@@ -17,13 +17,13 @@ function M.setup()
 
   -- Keymap: y to copy result
   lc.keymap.set('main', 'y', function()
-    local entry = lc.api.page_get_hovered()
+    local entry = lc.api.get_hovered()
     if entry and entry.on_copy then entry.on_copy(entry) end
   end)
 
   -- Keymap: <enter> to execute tool
   lc.keymap.set('main', '<enter>', function()
-    local entry = lc.api.page_get_hovered()
+    local entry = lc.api.get_hovered()
     if entry and entry.on_enter then entry.on_enter() end
   end)
 end
