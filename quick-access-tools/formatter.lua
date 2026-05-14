@@ -2,11 +2,11 @@
 
 -- Check if a command is available
 local function check_has(cmd)
-  if not lc.system.executable(cmd) then error(cmd .. ' not found') end
+  if not deck.system.executable(cmd) then error(cmd .. ' not found') end
 end
 
 -- Show error in preview
-local function show_error(err) lc.api.set_preview(nil, ('Error: ' .. tostring(err)):fg 'red') end
+local function show_error(err) deck.api.set_preview(nil, ('Error: ' .. tostring(err)):fg 'red') end
 
 local tools = {
   {
@@ -14,8 +14,8 @@ local tools = {
     display = 'JSON Format',
     description = 'Format JSON with indentation',
     converter = function(input, cb)
-      local decoded = lc.json.decode(input)
-      local encoded = lc.json.encode(decoded, { indent = 2 })
+      local decoded = deck.json.decode(input)
+      local encoded = deck.json.encode(decoded, { indent = 2 })
       cb(encoded, { language = 'json' })
     end,
   },
@@ -24,9 +24,9 @@ local tools = {
     display = 'JSON Minify',
     description = 'Minify JSON (remove whitespace)',
     converter = function(input, cb)
-      lc.log('info', input)
-      local decoded = lc.json.decode(input)
-      local encoded = lc.json.encode(decoded)
+      deck.log('info', input)
+      local decoded = deck.json.decode(input)
+      local encoded = deck.json.encode(decoded)
       cb(encoded, { language = 'json' })
     end,
   },
@@ -35,7 +35,7 @@ local tools = {
     display = 'Stringify',
     description = 'Convert text to JSON string',
     converter = function(input, cb)
-      local encoded = lc.json.encode(input:trim())
+      local encoded = deck.json.encode(input:trim())
       cb(encoded)
     end,
   },
@@ -44,7 +44,7 @@ local tools = {
     display = 'Unstringify',
     description = 'Convert JSON string to text',
     converter = function(input, cb)
-      local decoded = lc.json.decode(input:trim())
+      local decoded = deck.json.decode(input:trim())
       cb(decoded)
     end,
   },
@@ -54,7 +54,7 @@ local tools = {
     display = 'Base64 Decode',
     description = 'Decode Base64 string',
     converter = function(input, cb)
-      local decoded = lc.base64.decode(input:trim())
+      local decoded = deck.base64.decode(input:trim())
       cb(decoded)
     end,
   },
@@ -63,7 +63,7 @@ local tools = {
     display = 'Base64 Encode',
     description = 'Encode string to Base64',
     converter = function(input, cb)
-      local encoded = lc.base64.encode(input:trim())
+      local encoded = deck.base64.encode(input:trim())
       cb(encoded)
     end,
   },
@@ -71,13 +71,13 @@ local tools = {
     key = 'url_encode',
     display = 'URL Encode',
     description = 'URL encode string',
-    converter = function(input, cb) cb(lc.url.encode(input)) end,
+    converter = function(input, cb) cb(deck.url.encode(input)) end,
   },
   {
     key = 'url_decode',
     display = 'URL Decode',
     description = 'URL decode string',
-    converter = function(input, cb) cb(lc.url.decode(input)) end,
+    converter = function(input, cb) cb(deck.url.decode(input)) end,
   },
   {
     key = 'json_to_nix',
@@ -85,11 +85,11 @@ local tools = {
     description = 'Convert JSON to Nix expression',
     converter = function(input, cb)
       check_has 'nix'
-      local tmp = lc.fs.tempfile { suffix = '.json', content = input }
+      local tmp = deck.fs.tempfile { suffix = '.json', content = input }
 
       local expr = 'builtins.fromJSON (builtins.readFile "' .. tmp .. '")'
-      lc.system({ 'nix-instantiate', '--eval', '--expr', expr }, function(out)
-        lc.fs.remove(tmp)
+      deck.system({ 'nix-instantiate', '--eval', '--expr', expr }, function(out)
+        deck.fs.remove(tmp)
 
         if out.code == 0 then
           cb(out.stdout, { language = 'nix' })
@@ -104,8 +104,8 @@ local tools = {
     display = 'Convert YAML To JSON',
     description = 'Convert YAML to JSON',
     converter = function(input, cb)
-      local decoded = lc.yaml.decode(input)
-      local json = lc.json.encode(decoded)
+      local decoded = deck.yaml.decode(input)
+      local json = deck.json.encode(decoded)
       cb(json, { language = 'json' })
     end,
   },
@@ -114,8 +114,8 @@ local tools = {
     display = 'Convert JSON To YAML',
     description = 'Convert JSON to YAML',
     converter = function(input, cb)
-      local decoded = lc.json.decode(input)
-      local yaml = lc.yaml.encode(decoded)
+      local decoded = deck.json.decode(input)
+      local yaml = deck.yaml.encode(decoded)
       cb(yaml, { language = 'yaml' })
     end,
   },
@@ -124,11 +124,11 @@ local tools = {
 -- Show result in preview
 local function show_preview(result, opt)
   if opt and opt.language then
-    lc.api.set_preview(nil, lc.style.highlight(result, opt.language))
+    deck.api.set_preview(nil, deck.style.highlight(result, opt.language))
   else
-    lc.api.set_preview(nil, lc.style.text {
-      lc.style.line {
-        lc.style.span(result),
+    deck.api.set_preview(nil, deck.style.text {
+      deck.style.line {
+        deck.style.span(result),
       },
     })
   end
@@ -136,7 +136,7 @@ end
 
 -- Read from clipboard
 local function read_clipboard(cb)
-  local ok, content = pcall(lc.clipboard.get)
+  local ok, content = pcall(deck.clipboard.get)
   if not ok then
     show_error(content)
   elseif #content == 0 then
@@ -148,9 +148,9 @@ end
 
 -- Write to clipboard
 local function write_clipboard(text)
-  local ok, err = pcall(lc.clipboard.set, text)
+  local ok, err = pcall(deck.clipboard.set, text)
   if ok then
-    lc.notify 'Copied to clipboard'
+    deck.notify 'Copied to clipboard'
   else
     show_error('Failed to copy to clipboard: ' .. tostring(err))
   end

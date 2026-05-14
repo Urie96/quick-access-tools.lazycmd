@@ -2,7 +2,7 @@
 
 -- Read from clipboard
 local function read_clipboard()
-  local ok, content = pcall(lc.clipboard.get)
+  local ok, content = pcall(deck.clipboard.get)
   if ok then
     return content
   else
@@ -12,24 +12,24 @@ end
 
 -- Write to clipboard
 local function write_clipboard(text)
-  local ok, err = pcall(lc.clipboard.set, text)
+  local ok, err = pcall(deck.clipboard.set, text)
   return ok, err
 end
 
 -- Show result in preview
 local function show_preview(result)
-  lc.api.set_preview(nil, lc.style.text {
-    lc.style.line {
-      lc.style.span(result),
+  deck.api.set_preview(nil, deck.style.text {
+    deck.style.line {
+      deck.style.span(result),
     },
   })
 end
 
 -- Show error in preview
 local function show_error(err)
-  lc.api.set_preview(nil, lc.style.text {
-    lc.style.line {
-      lc.style.span('Error: ' .. err),
+  deck.api.set_preview(nil, deck.style.text {
+    deck.style.line {
+      deck.style.span('Error: ' .. err),
     },
   })
 end
@@ -59,11 +59,11 @@ local function unix_to_date(cb)
     return
   end
 
-  -- Use lc.time.format to get readable date
-  local readable = lc.time.format(unix_time, '%Y-%m-%d %H:%M:%S')
+  -- Use deck.time.format to get readable date
+  local readable = deck.time.format(unix_time, '%Y-%m-%d %H:%M:%S')
 
-  -- Use lc.time.now to get current time
-  local current_time = lc.time.now()
+  -- Use deck.time.now to get current time
+  local current_time = deck.time.now()
   local diff = unix_time - current_time
 
   local suffix

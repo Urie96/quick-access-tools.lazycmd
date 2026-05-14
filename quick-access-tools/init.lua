@@ -1,4 +1,4 @@
--- t: A lazycmd plugin for text transformations and utilities
+-- t: A lazydeck plugin for text transformations and utilities
 
 local M = {}
 
@@ -12,18 +12,18 @@ function M.setup()
 
   for _, module in ipairs(modules) do
     local tools = require(module)
-    lc.list_extend(all_tools, tools)
+    deck.list_extend(all_tools, tools)
   end
 
   -- Keymap: y to copy result
-  lc.keymap.set('main', 'y', function()
-    local entry = lc.api.get_hovered()
+  deck.keymap.set('main', 'y', function()
+    local entry = deck.api.get_hovered()
     if entry and entry.on_copy then entry.on_copy(entry) end
   end)
 
   -- Keymap: <enter> to execute tool
-  lc.keymap.set('main', '<enter>', function()
-    local entry = lc.api.get_hovered()
+  deck.keymap.set('main', '<enter>', function()
+    local entry = deck.api.get_hovered()
     if entry and entry.on_enter then entry.on_enter() end
   end)
 end
@@ -31,7 +31,7 @@ end
 function M.list(_, cb) cb(all_tools) end
 
 function M.preview(entry, cb)
-  cb(lc.style.text {
+  cb(deck.style.text {
     (entry.description or 'No description'):fg 'green',
     ' ',
     entry.on_enter and ('Press Enter to execute'):fg 'darkgray',
