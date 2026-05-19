@@ -2,6 +2,14 @@
 
 local M = {}
 
+function M.meta()
+  return {
+    icon = '󰆧',
+    desc = 'Quick text and utility tools',
+    color = 'yellow',
+  }
+end
+
 local all_tools = {}
 
 function M.setup()
