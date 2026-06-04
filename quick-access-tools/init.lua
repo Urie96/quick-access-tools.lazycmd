@@ -23,17 +23,19 @@ function M.setup()
     deck.list_extend(all_tools, tools)
   end
 
+  local path = { 'quick-access-tools' }
+
   -- Keymap: y to copy result
   deck.keymap.set('main', 'y', function()
     local entry = deck.api.get_hovered()
     if entry and entry.on_copy then entry.on_copy(entry) end
-  end)
+  end, { path = path, desc = 'copy result' })
 
   -- Keymap: <enter> to execute tool
   deck.keymap.set('main', '<enter>', function()
     local entry = deck.api.get_hovered()
     if entry and entry.on_enter then entry.on_enter() end
-  end)
+  end, { path = path, desc = 'execute tool' })
 end
 
 function M.list(_, cb) cb(all_tools) end
