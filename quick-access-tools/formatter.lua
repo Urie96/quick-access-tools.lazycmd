@@ -5,9 +5,6 @@ local function check_has(cmd)
   if not deck.system.executable(cmd) then error(cmd .. ' not found') end
 end
 
--- Show error in preview
-local function show_error(err) deck.api.set_preview(nil, ('Error: ' .. tostring(err)):fg 'red') end
-
 local tools = {
   {
     key = 'json_format',
@@ -94,7 +91,7 @@ local tools = {
         if out.code == 0 then
           cb(out.stdout, { language = 'nix' })
         else
-          show_error(out.stderr)
+          cb(nil, nil, out.stderr)
         end
       end)
     end,
@@ -120,59 +117,5 @@ local tools = {
     end,
   },
 }
-
--- Show result in preview
-local function show_preview(result, opt)
-  if opt and opt.language then
-    deck.api.set_preview(nil, deck.style.highlight(result, opt.language))
-  else
-    deck.api.set_preview(nil, deck.style.text {
-      deck.style.line {
-        deck.style.span(result),
-      },
-    })
-  end
-end
-
--- Read from clipboard
-local function read_clipboard(cb)
-  local ok, content = pcall(deck.clipboard.get)
-  if not ok then
-    show_error(content)
-  elseif #content == 0 then
-    show_error 'Clipboard is empty'
-  else
-    cb(content)
-  end
-end
-
--- Write to clipboard
-local function write_clipboard(text)
-  local ok, err = pcall(deck.clipboard.set, text)
-  if ok then
-    deck.notify 'Copied to clipboard'
-  else
-    show_error('Failed to copy to clipboard: ' .. tostring(err))
-  end
-  return ok, err
-end
-
-for _, tool in ipairs(tools) do
-  if tool.converter then
-    tool.on_enter = function()
-      read_clipboard(function(content)
-        local ok, err = pcall(tool.converter, content, show_preview)
-        if not ok then show_error(err) end
-      end)
-    end
-
-    tool.on_copy = function()
-      read_clipboard(function(content)
-        local ok, err = pcall(tool.converter, content, write_clipboard)
-        if not ok then show_error(err) end
-      end)
-    end
-  end
-end
 
 return tools

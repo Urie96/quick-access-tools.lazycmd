@@ -1,46 +1,6 @@
 -- Date and time related tools
 
--- Read from clipboard
-local function read_clipboard()
-  local ok, content = pcall(deck.clipboard.get)
-  if ok then
-    return content
-  else
-    return nil, content
-  end
-end
-
--- Write to clipboard
-local function write_clipboard(text)
-  local ok, err = pcall(deck.clipboard.set, text)
-  return ok, err
-end
-
--- Show result in preview
-local function show_preview(result)
-  deck.api.set_preview(nil, deck.style.text {
-    deck.style.line {
-      deck.style.span(result),
-    },
-  })
-end
-
--- Show error in preview
-local function show_error(err)
-  deck.api.set_preview(nil, deck.style.text {
-    deck.style.line {
-      deck.style.span('Error: ' .. err),
-    },
-  })
-end
-
-local function unix_to_date(cb)
-  local input, err = read_clipboard()
-  if err or not input or #input == 0 then
-    show_error(err or 'Clipboard is empty')
-    return
-  end
-
+local function unix_to_date(input, cb)
   input = string.gsub(input, '%s+', '')
   local len = #input
 
@@ -50,14 +10,10 @@ local function unix_to_date(cb)
   elseif len == 10 then
     unix_time = tonumber(input)
   else
-    show_error 'Invalid Unix timestamp length'
-    return
+    error 'Invalid Unix timestamp length'
   end
 
-  if not unix_time then
-    show_error 'Invalid Unix timestamp'
-    return
-  end
+  if not unix_time then error 'Invalid Unix timestamp' end
 
   -- Use deck.time.format to get readable date
   local readable = deck.time.format(unix_time, '%Y-%m-%d %H:%M:%S')
@@ -107,7 +63,6 @@ return {
     key = 'unix_to_date',
     display = 'Unix Timestamp To Date',
     description = 'Convert Unix timestamp to human readable date',
-    on_enter = function() unix_to_date(show_preview) end,
-    on_copy = function() unix_to_date(write_clipboard) end,
+    converter = unix_to_date,
   },
 }
